@@ -1,6 +1,7 @@
 package f.team.ecc.stratesi
 
 import android.content.Context
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_main.*
@@ -13,11 +14,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         multiBattleButton.setOnClickListener {
-
+            //画面を遷移
+            val reversiIntent = Intent(this, ReversiActivity::class.java)
+            startActivity(reversiIntent)
         }
 
         onlineBattleButton.setOnClickListener {
-
+            val reversiIntent = Intent(this, ReversiActivity::class.java)
+            startActivity(reversiIntent)
         }
 
         rankingButton.setOnClickListener {
