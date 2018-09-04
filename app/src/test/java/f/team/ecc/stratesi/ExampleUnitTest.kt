@@ -1,4 +1,4 @@
-package com.example.access.stratesi
+package f.team.ecc.stratesi
 
 import org.junit.Test
 

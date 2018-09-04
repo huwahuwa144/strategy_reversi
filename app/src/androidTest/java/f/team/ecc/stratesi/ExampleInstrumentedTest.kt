@@ -1,4 +1,4 @@
-package com.example.access.stratesi
+package f.team.ecc.stratesi
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
