@@ -89,18 +89,24 @@ class ReversiView:View {
                     if(placeMap[myX+1+(myY+1)*10] > 0){
                         boardMap[myX+1+(myY+1)*10] = PLAYER
                         reverse(PLAYER,myX+1+(myY+1)*10)
+                        TURN = !TURN
+                        if(TURN){
+                            canPutStone(PLAYER)
+                        }else{
+                            canPutStone(RIVAL)
+                        }
                     }
                 }else{
                     if(placeMap[myX+1+(myY+1)*10] > 0){
                         boardMap[myX+1+(myY+1)*10] = RIVAL
                         reverse(RIVAL,myX+1+(myY+1)*10)
+                        TURN = !TURN
+                        if(TURN){
+                            canPutStone(PLAYER)
+                        }else{
+                            canPutStone(RIVAL)
+                        }
                     }
-                }
-                TURN = !TURN
-                if(TURN){
-                    canPutStone(PLAYER)
-                }else{
-                    canPutStone(RIVAL)
                 }
                 invalidate()
             }
