@@ -20,6 +20,8 @@ import android.graphics.Bitmap
 
 
 
+
+
 class ReversiView:View {
     companion object {
         var viewWidth = 0
@@ -84,10 +86,20 @@ class ReversiView:View {
                 myX = (event.x/(viewWidth/8)).toInt()
                 myY = (event.y/(viewWidth/8)).toInt()
                 if(TURN){
-                    boardMap[myX+1+(myY+1)*10] = PLAYER
+                    if(placeMap[myX+1+(myY+1)*10] > 0){
+                        boardMap[myX+1+(myY+1)*10] = PLAYER
+                        reverse(PLAYER,myX+1+(myY+1)*10)
+                    }
+                }else{
+                    if(placeMap[myX+1+(myY+1)*10] > 0){
+                        boardMap[myX+1+(myY+1)*10] = RIVAL
+                        reverse(RIVAL,myX+1+(myY+1)*10)
+                    }
+                }
+                TURN = !TURN
+                if(TURN){
                     canPutStone(PLAYER)
                 }else{
-                    boardMap[myX+1+(myY+1)*10] = RIVAL
                     canPutStone(RIVAL)
                 }
                 invalidate()
@@ -157,6 +169,43 @@ class ReversiView:View {
             }
         }
         return pass
+    }
+
+    /**
+     * 相手のstoneを挟んだ時reverse
+     */
+
+    fun reverse(playerStone: Int,p: Int){
+        var playerStone = playerStone
+        var rivalStone = PLAYER
+        var i: Int
+        var j: Int
+        var k: Int
+
+        if (playerStone === PLAYER) rivalStone = RIVAL
+
+        boardMap[p] = playerStone
+        i = 0
+        while (i < 8) {
+            if (boardMap[p + MOVE[i]] === rivalStone) {
+                j = 2
+                while (j < 8) {
+                    if (boardMap[p + MOVE[i] * j] === playerStone) {
+                        k = 1
+                        while (k < j) {
+                            boardMap[p + MOVE[i] * k] = playerStone
+                            k++
+                        }
+                        break
+                    } else if (boardMap[p + MOVE[i] * j] === rivalStone) {
+                    } else {
+                        break
+                    }
+                    j++
+                }
+            }
+            i++
+        }
     }
 
     /**
