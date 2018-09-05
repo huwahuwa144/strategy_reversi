@@ -22,6 +22,18 @@ class ReversiActivity : AppCompatActivity() {
         imageView.setOnTouchListener(View.OnTouchListener { view, motionEvent ->
             onTouchEvent(motionEvent)
         })
+        imageView.initBoard()
+        ReversiView.TURN = true
+        imageView.canPutStone(1)
+        turnButton.setOnClickListener {
+            ReversiView.TURN = !ReversiView.TURN
+            if(ReversiView.TURN){
+                imageView.canPutStone(1)
+            }else{
+                imageView.canPutStone(2)
+            }
+            imageView.invalidate()
+        }
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
