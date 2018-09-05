@@ -14,10 +14,9 @@ import android.view.Display
 import android.view.MotionEvent
 import android.graphics.BitmapFactory
 import android.graphics.Bitmap
-
-
-
-
+import kotlinx.android.synthetic.main.activity_reversi.view.*
+import f.team.ecc.stratesi.MainActivity
+import android.widget.TextView
 
 
 
@@ -25,16 +24,19 @@ import android.graphics.Bitmap
 class ReversiView:View {
     companion object {
         var viewWidth = 0
-
         /**
          * 選択した位置を保存する変数
          */
         var myX = 0
         var myY = 0
+
         /**
          * TURN変数がtrueで黒falseで白の手番
          */
         var TURN = true
+
+        private var blackPt = 0
+        private var whitePt = 0
     }
     constructor(context:Context):super(context)
     constructor(context: Context,attrs: AttributeSet):super(context,attrs)
@@ -43,8 +45,11 @@ class ReversiView:View {
     private val MOVE = intArrayOf(-11, -10, -9, -1, 1, 9, 10, 11)
     private val placeMap = IntArray(100)
     private val boardMap = IntArray(100)
+    val stoneHeavyMap = mutableListOf<StoneHeavyData>()
     private val PLAYER = 1
     private val RIVAL = 2
+    private var heavy = 0
+
 
     private val IMG_BLACK = BitmapFactory.decodeResource(resources, R.drawable.black)
     private val IMG_WHITE = BitmapFactory.decodeResource(resources, R.drawable.white)
@@ -53,7 +58,7 @@ class ReversiView:View {
     val IMG_RBOARD = resizeBitmapToDisplaySize(IMG_BOARD)
 
     /**
-     * 描画部 invalidate()で描画更新
+     * 描画部 invalidate()メソッドの呼び出しで描画更新
      */
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -61,13 +66,35 @@ class ReversiView:View {
         canvas.drawBitmap(IMG_RBOARD,0.toFloat(),0.toFloat(),paint)
         var i = 11
         while (i <= 88) {
-            if (boardMap[i] === PLAYER) canvas.drawBitmap(IMG_BLACK, viewWidth/8*(i%10-1).toFloat(), viewWidth/8*(i/10-1).toFloat(), paint)
-            if (boardMap[i] === RIVAL) canvas.drawBitmap(IMG_WHITE, viewWidth/8*(i%10-1).toFloat(), viewWidth/8*(i/10-1).toFloat(), paint)
-            if (placeMap[i] > 0) canvas.drawBitmap(IMG_LIGHT,viewWidth/8*(i%10-1).toFloat(), viewWidth/8*(i/10-1).toFloat(), paint)
-            Log.d("boardMapInitCheck",boardMap[i].toString()+i)
+            if (boardMap[i] === PLAYER){
+                if(stoneHeavyMap[i].user == PLAYER){
+                    when(stoneHeavyMap[i].heavy){
+                        1->{
+                            Log.d("board","1のコマ")
+                        }
+                        2->{
+                            Log.d("board","2のコマ")
+                        }
+                        3->{
+                            Log.d("board","3のコマ")
+                        }
+                        else->{
+                            Log.d("board","初期")
+                        }
+                    }
+                }
+                canvas.drawBitmap(IMG_BLACK, viewWidth/8*(i%10-1).toFloat(), viewWidth/8*(i/10-1).toFloat(), paint)
+            }
+            if (boardMap[i] === RIVAL){
+                canvas.drawBitmap(IMG_WHITE, viewWidth/8*(i%10-1).toFloat(), viewWidth/8*(i/10-1).toFloat(), paint)
+            }
+            if (placeMap[i] > 0){
+                canvas.drawBitmap(IMG_LIGHT,viewWidth/8*(i%10-1).toFloat(), viewWidth/8*(i/10-1).toFloat(), paint)
+            }
             i++
         }
     }
+
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -85,26 +112,55 @@ class ReversiView:View {
             MotionEvent.ACTION_UP -> {
                 myX = (event.x/(viewWidth/8)).toInt()
                 myY = (event.y/(viewWidth/8)).toInt()
+                val tv = (context as f.team.ecc.stratesi.ReversiActivity).findViewById(R.id.turnName) as TextView
                 if(TURN){
                     if(placeMap[myX+1+(myY+1)*10] > 0){
                         boardMap[myX+1+(myY+1)*10] = PLAYER
+                        stoneHeavyMap[myX+1+(myY+1)*10] = StoneHeavyData(PLAYER,heavy)
+                        blackPt += heavy
                         reverse(PLAYER,myX+1+(myY+1)*10)
                         TURN = !TURN
                         if(TURN){
-                            canPutStone(PLAYER)
+                            if(canPutStone(PLAYER)&&canPutStone(RIVAL)){
+                                tv.text = "試合終了"
+                            }else if(canPutStone(PLAYER)){
+                                TURN = !TURN
+                            }else{
+                                tv.text="白の手番"
+                            }
                         }else{
-                            canPutStone(RIVAL)
+                            if(canPutStone(PLAYER)&&canPutStone(RIVAL)){
+                                tv.text = "試合終了"
+                            }else if(canPutStone(RIVAL)){
+                                TURN = !TURN
+                            }else{
+                                tv.text="白の手番"
+                            }
                         }
                     }
                 }else{
                     if(placeMap[myX+1+(myY+1)*10] > 0){
                         boardMap[myX+1+(myY+1)*10] = RIVAL
+                        stoneHeavyMap[myX+1+(myY+1)*10] = StoneHeavyData(RIVAL,heavy)
+                        whitePt += heavy
                         reverse(RIVAL,myX+1+(myY+1)*10)
                         TURN = !TURN
                         if(TURN){
-                            canPutStone(PLAYER)
+                            if(canPutStone(PLAYER)&&canPutStone(RIVAL)){
+                                tv.text = "試合終了"
+                            }else if(canPutStone(PLAYER)){
+                                TURN = !TURN
+                            }else{
+                                tv.text="黒の手番"
+                            }
                         }else{
-                            canPutStone(RIVAL)
+                            if(canPutStone(PLAYER)&&canPutStone(RIVAL)){
+                                tv.text = "試合終了"
+                            }else if(canPutStone(RIVAL)){
+                                TURN = !TURN
+                            }else{
+                                tv.text="黒の手番"
+                            }
                         }
                     }
                 }
@@ -144,16 +200,16 @@ class ReversiView:View {
     }
 
     /**
-     * 石の置ける場所を判定し格納
+     * 石の置ける場所を判定し表示
      */
     fun canPutStone(playerStone:Int):Boolean{
         var playerStone = playerStone
         var rivalStone = PLAYER
         var pass = true
-        if(playerStone == PLAYER){
-            rivalStone = RIVAL
+        rivalStone = if(playerStone == PLAYER){
+            RIVAL
         }else{
-            rivalStone = PLAYER
+            PLAYER
         }
         for(i in 0..99){
             placeMap[i] = 0
@@ -162,12 +218,12 @@ class ReversiView:View {
                     if(boardMap[i+MOVE[j]] == rivalStone) {
                         for (k in 2..7) {
                             if (boardMap[i + MOVE[j] * k] == playerStone) {
-                                placeMap[i] += k - 1;
+                                placeMap[i] += k - 1
                                 pass = false
-                                break;
+                                break
                             } else if (boardMap[i + MOVE[j] * k] == rivalStone) {
                             } else {
-                                break;
+                                break
                             }
                         }
                     }
@@ -178,7 +234,7 @@ class ReversiView:View {
     }
 
     /**
-     * 相手のstoneを挟んだ時reverse
+     * 相手のstoneを挟んだ時コマをreverseする処理
      */
 
     fun reverse(playerStone: Int,p: Int){
@@ -200,6 +256,18 @@ class ReversiView:View {
                         k = 1
                         while (k < j) {
                             boardMap[p + MOVE[i] * k] = playerStone
+
+                            // ここで反転する前の相手のコマの重みを自分のコマの重みに割り当てる
+                            val temp = stoneHeavyMap[p + MOVE[i] * k].heavy
+                            if(playerStone === PLAYER){
+                                blackPt += temp
+                            }else{
+                                whitePt += temp
+                            }
+                            Log.d("black",blackPt.toString())
+                            Log.d("white", whitePt.toString())
+                            stoneHeavyMap[p + MOVE[i] * k] = StoneHeavyData(playerStone,temp)
+                            Log.d("反転した要素のindex",stoneHeavyMap[p+MOVE[i]*k].heavy.toString())
                             k++
                         }
                         break
@@ -219,9 +287,12 @@ class ReversiView:View {
      */
     fun initBoard(){
         var i = 0
+        blackPt = 0
+        whitePt = 0
         //ゲームの初期化
         while (i < 100) {
             boardMap[i] = 0
+            stoneHeavyMap.add(i,StoneHeavyData(0,0))
             i++
         }
         i = 0
@@ -244,13 +315,21 @@ class ReversiView:View {
             boardMap[i + 90] = -1
             i++
         }
+        //初期コマ配置
         boardMap[44] = RIVAL
+        stoneHeavyMap[44] = StoneHeavyData(RIVAL,1)
         boardMap[45] = PLAYER
+        stoneHeavyMap[45] = StoneHeavyData(PLAYER,1)
         boardMap[54] = PLAYER
+        stoneHeavyMap[54] = StoneHeavyData(PLAYER,1)
         boardMap[55] = RIVAL
+        stoneHeavyMap[55] = StoneHeavyData(RIVAL,1)
     }
 
-    fun test(){
-        Log.d("view内のメソッドを実行","できた")
+    fun setHeavy(h:Int){
+        heavy = h
+    }
+    fun getHeavy():Int{
+        return heavy
     }
 }

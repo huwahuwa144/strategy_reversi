@@ -32,20 +32,57 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TURN"
+                android:text="PASS"
                 android:id="@+id/turnButton"/>
 
-            <Button
+            <ToggleButton
                 android:id="@+id/oneButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button" />
-            <Button
+                android:textOff="1"
+                android:textOn="1"/>
+            <ToggleButton
+                android:id="@+id/twoButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button"/>
+                android:textOff="2"
+                android:textOn="2"/>
+            <ToggleButton
+                android:id="@+id/threeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textOff="3"
+                android:textOn="3"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/turnName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="黒の手番" />
+
+            <TextView
+                android:id="@+id/blackCheckPt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="黒" />
+
+            <TextView
+                android:id="@+id/whiteCheckPt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="白" />
         </LinearLayout>
     </LinearLayout>
 
